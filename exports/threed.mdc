@@ -1,0 +1,58 @@
+---
+description: threed — 3D model creation as an engineering discipline: mesh craft (manifold, normals, units, budgets, slop list), parametric CAD (OpenSCAD/CadQuery), Blender headless (numbered builds, review renders, bake, roundtrip), AI generation (concept-first, price-before-spend, staged chain, repair), formats/optimization (trimesh, gltf-transform), 3D-print readiness. Apply when making, converting, repairing, validating, or exporting any 3D model.
+globs:
+alwaysApply: true
+---
+
+# threed (Cursor rules export)
+
+The condensed form of the `threed` skill — the full skill lives at github.com/lucasgabrieldevgg/threed; this file carries the operating rules.
+
+## The threed contract
+
+1. Purpose decides everything: destination sets budget (game 10–50k tris, web <100k, print sane), format (GLB/FBX/STL/3MF/USDZ), and gates. No purpose → ask.
+2. Know the size before you build or generate. Real units declared up front; bounding box verified against intent. Scale is the #1 AI-3D failure.
+3. Silhouette before detail. Blockout → rendered silhouette check → then detail. Detail on wrong proportions is scheduled rework.
+4. The mesh is data: manifold, oriented, scaled, budgeted — each property gated with numbers (trimesh), not vibes.
+5. Two-channel verification: numbers (watertight, winding, volume, extents, faces) AND fixed-view renders the agent actually inspects. Script success ≠ model success.
+6. Every export gets a roundtrip: reimport, probe counts/UVs/materials/scale, render one check.
+
+## Path matrix
+
+- Exact dimensions/holes → CAD code (OpenSCAD CSG, CadQuery parametric). Don't sculpt a bracket.
+- Organic from reference → Blender headless, gated phases. Don't CAD a dragon.
+- Textured asset fast → generation API, concept-image-first → repair + decimate (draft, never final).
+- Convert/optimize/validate → trimesh + gltf-transform (+ Blender for cross-format).
+- Printing → printability gates + orientation + user presses Print.
+
+## Hard rules
+
+- Never claim a model from code success or file existence — numbers + renders or it didn't happen.
+- AI meshes are drafts: analyze + repair (merge verts → remove degenerate → fix normals, IN THAT ORDER) + decimate to budget; check volume delta (repair that removes >5% volume amputated something).
+- Price before spend: quote/dry-run first; approval gates between costly stages; one variable per rerun; regenerate the failing view, not the asset.
+- Quads live in FBX/DCC only — glTF/OBJ/STL are triangles; never promise quad topology in a GLB.
+- Scale, pivot, normals drift between pipeline steps — re-verify after every stage.
+- STL/OBJ are unitless (slicer assumes mm); glTF is meters; 3MF carries units. Trust the imported bounding box, not API self-reports.
+- The print button belongs to the user; the agent delivers analysis, orientation, preview, manifest.
+- Builds are numbered idempotent scripts (00_init → 10_blockout → … → 50_export), never hand edits. Seeds fixed. Constants commented with their source.
+- .blend is not interchange — exports + manifest are the deliverable.
+
+## The gates (trimesh)
+
+```python
+import trimesh
+m = trimesh.load(path, force="mesh")
+# watertight, winding_consistent, volume > 0, extents vs intent, face count vs budget
+# repair order: merge_vertices → remove_degenerate_faces → fix_normals → re-gate
+```
+
+## Review renders
+
+clay (silhouette/mass) · silhouette (pure shape) · wire (topology) · checker (UVs) · turntable 16×22.5° (every face a frame) · reference-matched camera (drift measurable). Workbench for speed; gameplay pixel size for "does this detail even exist". Contact sheet, look at it, regenerate only failing views.
+
+## Slop death list (cut on sight)
+
+Non-manifold "done" · inverted normals · unitless scale · detail before silhouette · smooth-everything · export never reimported · z-fighting coincident faces · one blob where spec said parts · placeholder dimensions · 4K textures on 128px assets · quads promised in GLB · unverified repair · "PBR" that is one flat color · viewport claims.
+
+---
+Sources & attribution: this export condenses the `threed` skill (github.com/lucasgabrieldevgg/threed), an original synthesis (MIT) merging achimala/dream-loop (MIT), scenario-labs/skills (MIT), majidmanzarpour/blender-game-skills (MIT), heyixuan2/bambu-studio-ai (MIT), arjun988/blender-skills (MIT), viettranx/3dviz-pro-max (MIT), samyost1/3dicon (MIT), icesixgod/awesome-astra-blender-characters (MIT), RobLe3/cc-blender-skill (MIT), with concept-only credit to flowful-ai/cad-skill (PolyForm NC, not merged). Package versions live-verified 2026-10-15. Full credits: ATTRIBUTION.md in the repo.

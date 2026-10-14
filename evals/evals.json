@@ -1,0 +1,77 @@
+{
+  "skill_name": "threed",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Make me a 3D model of a gear.",
+      "expected_output": "Asks purpose and size before modeling (destination sets budget/format/gates; scale is the #1 failure). If mechanical/exact: routes to CAD (OpenSCAD rotate-extrude or CadQuery revolve) with module tooth count, $fn>=48, hub bore with print tolerance. If decorative/game: Blender or generation lane per budget. Ends with numbers gate (watertight, winding, extents vs declared size, face count) and a rendered view actually inspected. Does NOT silently pick units or hand over the raw first export.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I generated this dragon mesh with an AI API. Here's dragon.glb.",
+      "expected_output": "Treats it as a DRAFT: audits per-object (shell count — junk islands dropped), repair in the correct ORDER (merge_vertices -> remove_degenerate_faces -> fix_normals), volume-delta check asserting repair didn't amputate, decimate to destination budget with quality proof, re-gates, renders a turntable contact sheet and actually inspects it. States scale verification against intent (API meshes are unit-normalized; node transforms can hide real scale).",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Convert this FBX to GLB for our web app.",
+      "expected_output": "Blender headless conversion (--background --factory-startup, export_apply so modifiers apply), then: warns quads are triangulated irreversibly (FBX->GLB), re-runs gates, web budget check (<100k tris, decimate if over), gltf-transform optimize (dedup/weld, draco quantize-position 14, textures WebP<=1024 or KTX2), notes the decoder the three.js runtime must wire (DRACOLoader/KTX2Loader) in the manifest, roundtrip reimport proof.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "3D print this phone stand for me. It's 90mm tall in the file.",
+      "expected_output": "Runs printability gates (manifold, walls >=2.4mm, overhangs >45deg flagged, bed fit check against actual printer), orientation analysis (layer lines vs load; visible faces away from supports), never starts the print (user presses the button), shows preview before slicer handoff, delivers 3MF over STL (units!), print-readiness report in numbers. If downloaded/generated rather than parametric: re-orients the arbitrary default pose.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "I need a mounting bracket: 60mm wide, 40mm arm, M4 bolt holes, 3mm plate.",
+      "expected_output": "Routes to parametric CAD (not mesh/sculpt): OpenSCAD or CadQuery with every dimension a named commented parameter, hole = 4.0 + 0.2 FDM tolerance, fillets where load concentrates. Export STL (mm) + STEP if a human reopens it. Gates run on export (CAD-generated is not CAD-validated). Offers regeneration for tolerance tuning rather than manual patching.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Generate a 3D treasure chest asset for my game from this description.",
+      "expected_output": "Concept-image-FIRST pipeline (generate/approve the concept before paid generation — one-then-ask cost gate), price quoted before spend (dry-run or stated number, batch math), faceBudget set at generation (10-50k game-ready), then repair+decimate intake, then staged chain if engine-bound (geometry -> UV -> texture -> rig, each step re-verified for drift), T/A-pose not needed (prop), delivers GLB (+FBX only if quads/rig requested), manifest + roundtrip. Never promises quad topology in a GLB.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Show this character from behind and from above — generate those views.",
+      "expected_output": "Does NOT ask an image model per-angle (7-53% measured drift). Uses the 3D-intermediary route: image-to-3D untextured mesh -> clay render per camera (grounded, with cast shadow) -> image model repaints each layout from the original image -> consistent views; regenerates only failing views. For character turnarounds: 8 views at 45deg + top from the SAME original image and constraints, cross-checked for consistency, original image is the authority.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "Model this monster from the reference image in Blender. Make it awesome with lots of detail.",
+      "expected_output": "Gated phases: 10_blockout at real scale from the IMAGE (reads it, states inferred sides — never presents a guessed back as fact), silhouette gate BEFORE detail (rendered from reference-matched camera at gameplay pixel size), then primary forms, then detail. Numbered idempotent scripts, constants commented with reference source. Multi-view reference generated/checked for characters. Vertex count vs budget monitored. The enthusiasm for 'lots of detail' is scheduled AFTER the silhouette passes, not before.",
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "Is my mesh okay? Here's part.stl.",
+      "expected_output": "Runs the audit (R13): watertight, winding consistency, volume sign, extents in the file's convention (STL unitless — slicers assume mm), face count, degenerate/duplicate checks, shell count. Reports in numbers with a pass/fail per gate and the repair ORDER if fixes are needed (merge -> degenerate -> normals, THEN re-gate with volume delta). Does not run repair without reporting what it did.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "Make this 3D model smaller — it's 400MB of OBJ, way too heavy for the web.",
+      "expected_output": "Diagnoses first: faces vs textures (which one is the weight?). Decimate to web budget (<100k tris) with volume-delta + silhouette proof, THEN compress: draco/meshopt (bytes, not triangles — says so), textures to WebP/KTX2 at matched resolution (4K on a 128px asset is slop). gltf-transform pipeline, manifest with decoder notes, roundtrip. Offers LOD ladder if distance varies.",
+      "files": []
+    },
+    {
+      "id": 11,
+      "prompt": "The normals on my export look dark in Unity. Fix it.",
+      "expected_output": "Diagnoses inverted/inconsistent winding: trimesh volume sign + is_winding_consistent, fix_normals AFTER merge_vertices (order matters — fixing on split verts re-bakes the error), re-export, roundtrip reimport + one clay render to verify faces read correctly. Checks whether the flip came from a pipeline step (generation/unwrap steps inherit flips) and re-verifies downstream if so.",
+      "files": []
+    },
+    {
+      "id": 12,
+      "prompt": "Build me a low-poly rock for a game background. And a keychain with my name for printing.",
+      "expected_output": "Routes correctly: rock = procedural mesh (R05: icosphere + seeded quantized normal displacement, ~80 faces, game-background budget 1-10k) — deterministic, seed fixed. Keychain = CAD (R03: text() + linear_extrude over hull-rounded plate, teardrop hole >=3mm, emboss >=0.6mm/layer, wall checks, 3MF delivery, print-readiness report). Two different lanes, both ending in gates + render inspection.",
+      "files": []
+    }
+  ]
+}
